@@ -3,67 +3,71 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System;
+using System.Threading;
+using System.Diagnostics;
+
+
 
 public class NewBehaviourScript : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
-		Debug.Log("I am alive!");
-		int time = 0;
-		Main();
+	ReadWord word = new ReadWord(); 
 
+	System.IO.StreamReader file = new System.IO.StreamReader("Humble.txt");
+
+	// Use this for initialization
+	Stopwatch stopwatch = new Stopwatch();
+	void Start () {
+		stopwatch.Start();
+		 //because fuck closing the file
+		//readword initialization
+		UnityEngine.Debug.Log("Lookin' good baby!");
 	}
 	
 	// Update is called once per frame
-	void Update () {
-	}
+	Boolean nogo = false;
+	decimal tm = 0.000m;
 
-	static void Main() {
-
+	void Update() {
+		
 		//Initialize new variables
+		UnityEngine.Debug.Log("Lookin' good baby!");
 		int count = 1;
-		string curr;
-		ReadWord word = new ReadWord();
+		string curr = "a";
 
-		//Open file
-		System.IO.StreamReader file = new System.IO.StreamReader("sample.txt");
-
-
+		UnityEngine.Debug.Log("Lookin' good baby!");
 		//Read file and store each line in the corresponding variable
-		while ((curr = file.ReadLine ()) != null) {
-			int i = count;
-			if (count == 1)
-				word.Id = curr;
-			else if (i == 2)
-				word.Sub_bass = curr;
-			else if (i == 3)
-				word.Bass = curr;
-			else if (i == 4)
-				word.Mid = curr;
-			else if (i == 5)
-				word.High = curr;
-			else if (i == 6)
-				word.Name = curr;
-			else
-				word.Next = curr;
-			count++;
+		UnityEngine.Debug.Log("Lookin' good baby!");
+		while ((nogo == false) && count <= 7 && ((curr = file.ReadLine ()) != null)) {
+				int i = count;
+				if (count == 1)
+					word.Id = curr;
+				else if (i == 2)
+					word.Sub_bass = curr;
+				else if (i == 3)
+					word.Bass = curr;
+				else if (i == 4)
+					word.Mid = curr;
+				else if (i == 5)
+					word.High = curr;
+				else if (i == 6)
+					word.Name = curr;
+				else {
+					tm = Convert.ToDecimal (curr);
+				}
+				count++;
 		}
-
-		file.Close ();
-
-		change_name (word.Name);
-		change_size (word.Bass);
-		change_color (word.High);
-		change_bold (word.Mid);
-		change_pop (word.Sub_bass);
-
-		/*Print values to console -- will be used in another way later
-		Debug.Log (word.Id);
-		Debug.Log (word.Sub_bass);
-		Debug.Log (word.Bass);
-		Debug.Log (word.Mid);
-		Debug.Log (word.High);
-		Debug.Log (word.Name); */
+			
+		int t = Decimal.ToInt32 (tm);
+		if (stopwatch.ElapsedMilliseconds < (t*1000)+3000) {
+			nogo = true;
+		}else{
+			nogo = false;
+			change_name (word.Name);
+			change_size (word.Bass);
+			change_color (word.High);
+			change_bold (word.Mid);
+			//change_pop (word.Sub_bass);
+		}
 
 	}
 
@@ -119,7 +123,7 @@ public class NewBehaviourScript : MonoBehaviour {
 	}
 
 	static void change_size (string value) {
-		int fontsize = Int32.Parse(value) * 40 + 10;
+		int fontsize = Int32.Parse(value) * 30+30;
 		TextMesh t = GameObject.Find("NewText").GetComponent<TextMesh>();
 		t.fontSize = fontsize;
 	}
@@ -157,7 +161,7 @@ public class NewBehaviourScript : MonoBehaviour {
 		}
 	}
 
-	static void change_pop(string value) {
+/*	static void change_pop(string value) {
 		int val = Int32.Parse (value);
 		TextMesh t = GameObject.Find ("NewText").GetComponent<TextMesh> ();
 
@@ -194,5 +198,5 @@ public class NewBehaviourScript : MonoBehaviour {
 			System.Threading.Thread.Sleep(100);
 			t.fontStyle = FontStyle.Bold;
 		}
-	}
+	}*/
 }
