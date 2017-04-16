@@ -12,7 +12,7 @@ public class NewBehaviourScript : MonoBehaviour {
 
 	ReadWord word = new ReadWord(); 
 
-	System.IO.StreamReader file = new System.IO.StreamReader("Humble.txt");
+	System.IO.StreamReader file = new System.IO.StreamReader("Humble2.txt");
 
 	// Use this for initialization
 	Stopwatch stopwatch = new Stopwatch();
@@ -123,7 +123,7 @@ public class NewBehaviourScript : MonoBehaviour {
 	}
 
 	static void change_size (string value) {
-		int fontsize = Int32.Parse(value) * 30+30;
+		int fontsize = Int32.Parse(value) * 30 + 30;
 		TextMesh t = GameObject.Find("NewText").GetComponent<TextMesh>();
 		t.fontSize = fontsize;
 	}
