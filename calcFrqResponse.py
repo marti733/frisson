@@ -6,7 +6,12 @@ from pydub import AudioSegment
 import json
 from pprint import pprint
 from bisect import bisect_left
+import time
 
+
+
+#ID
+#
 
 def cutsong(ID, starttime,endtime,filename, current_time): #ID should be string
     
@@ -38,23 +43,23 @@ def fftcalc(filename):
         
     subbass = np.where(freq == (takeClosest(freq,16)))[0]
 
-    print subbass
+  
 
     bass = np.where(freq == (takeClosest(freq,60)))[0]
 
-    print bass
 
-    bassend = np.where(freq == (takeClosest(freq,1250)))[0]
 
-    print bassend
+    bassend = np.where(freq == (takeClosest(freq,250)))[0]
+
+ 
 
     mids = np.where(freq == (takeClosest(freq,400)))[0]
 
-    print mids
+
 
     highs = np.where(freq == (takeClosest(freq,16000)))[0]
 
-    print highs
+
        
     
 
@@ -62,8 +67,7 @@ def fftcalc(filename):
     bass_val = np.mean(intensity[bass:bassend])
     mid_val = np.mean(intensity[bassend:mids])
     high_val = np.mean(intensity[mids:highs])
-    plt.plot(freq,intensity)
-    plt.show()
+
     return [sub_val,bass_val,mid_val,high_val]
 
 
@@ -88,26 +92,33 @@ def wordMap(localmap):
         wordID = 0
         for word in element[-1][0].split(" "):
             start = wordID*(float(element[2])-float(element[1]))/len(element[-1][0].split(" ")) + float(element[1])
-            end = start+(float(element[2])-float(element[1]))/len(element[-1][0].split(" "))
-            print start
+            end = start+(float(element[2])-float(element[1]))/len(element[-1][0].split(" "))+.01
             wordlevel.append([ID, start, end , word ]) #[ID, starttime, endtime, word]
             wordID = wordID + 1
             ID += 1
     wordlevel = wordlevel [1:-1]
     return wordlevel
 
-def main(jsonfile, wavfile):
+def main(jsonfile, wavfile, outputfile):
     returnarray = [[]]
     current_time = 0
     lyrics = wordMap(JSONRead(jsonfile))
     for lyric in lyrics:
         cutsong(str(lyric[0]), float(lyric[1]), float(lyric[2]), wavfile, current_time)
-        current_time += (float(lyric[2])-float(lyric[1]))
+
+    f = open(outputfile, 'w')
+
+   
     for lyric in lyrics:
-        print lyric[0]
-        print (fftcalc(str(lyric[0])+"-"+wavfile))
-        print "\n"
-    return returnarray
+        f.write(str(lyric[0]) + "\n")
+        f.write(str((fftcalc(str(lyric[0])+"-"+wavfile))[0]/13000) + "\n")
+        f.write(str((fftcalc(str(lyric[0])+"-"+wavfile))[1]/10000) + "\n")
+        f.write(str((fftcalc(str(lyric[0])+"-"+wavfile))[2]/5000) + "\n")
+        f.write(str((fftcalc(str(lyric[0])+"-"+wavfile))[3]/600) + "\n")
+        f.write(str(lyric[-1]) + "\n")
+
+    f.close()        
+    
 
 
 
@@ -129,4 +140,4 @@ def takeClosest(myList, myNumber):
     else:
        return before
 
-print main('Starboy_map.json', 'The_Weeknd_Starboy.wav')
+print main('Starboy_map.json', 'The_Weeknd_Starboy.wav', "Starboy.txt")
